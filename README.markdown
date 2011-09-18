@@ -30,7 +30,7 @@ Point a domain name to your server or add one to /etc/hosts:
 
 `nserv myserver` where 'myserver' is the ssh hostname
   
-This will let you add/delete applications. If adding an application you will be provided with a git remote that you can add to your local repo. Once added execute `git push nserv master` and your server will updated.
+This will let you add/delete applications. If adding an application you will be provided with a git remote that you can add to your local repo. Once added execute `git push nserv master` and your server will updated. For now your main server file must be called 'server.js'.
 
 ## TODO:
 * Allow installation as a user other than root
