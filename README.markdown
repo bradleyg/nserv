@@ -19,11 +19,11 @@ Create ssh config file so you can just "ssh myserver" and get access:
 Point a domain name to your server or add one to /etc/hosts:
 [http://jorgebernal.info/2009/07/17/42foo-virtual-hosts-web-development/](http://jorgebernal.info/2009/07/17/42foo-virtual-hosts-web-development/)
 
-## Server setup (must be root)
+## Server setup (must be root):
 `apt-get install curl`  
 `curl https://raw.github.com/bradleyg/nserv/master/nserv_server_setup.sh | sh`
 
-## Local setup (linux / osx)
+## Local setup (linux / osx):
 `curl https://raw.github.com/bradleyg/nserv/master/nserv_local_setup.sh | sh`
 
 ## Usage (from local machine):
@@ -32,7 +32,7 @@ Point a domain name to your server or add one to /etc/hosts:
   
 This will let you add/delete applications. If adding an application you will be provided with a git remote that you can add to your local repo. Once added execute `git push nserv master` and your server will updated.
 
-## TODO
+## TODO:
 * Allow installation as a user other than root
 * Use a Procfile for main application server file
 * Restart servers on machine reboot
