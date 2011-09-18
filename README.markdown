@@ -1,4 +1,4 @@
-Nserv wants to be a [Heroku](http://www.heroku.com/) / [No.de](https://no.de/) / [AppFog](http://appfog.com/) clone which can be hosted on your own servers. Nserv uses [forever](https://github.com/indexzero/forever) and [node-http-proxy](https://github.com/nodejitsu/node-http-proxy) so Nserv is entirely running on nodejs.
+Nserv wants to be a [Heroku](http://www.heroku.com/) / [No.de](https://no.de/) / [AppFog](http://appfog.com/) style service which can be hosted on your own servers. Nserv uses [forever](https://github.com/indexzero/forever) and [node-http-proxy](https://github.com/nodejitsu/node-http-proxy) so is running almost entirely on nodejs.
 
 ## Features:
 * Easy install in three lines
