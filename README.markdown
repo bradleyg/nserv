@@ -16,6 +16,9 @@ Setup key pairs:
 Create ssh config file so you can just "ssh myserver" and get access:
 [http://www.karan.org/blog/index.php/2009/08/25/multiple-ssh-private-keys](http://www.karan.org/blog/index.php/2009/08/25/multiple-ssh-private-keys)
 
+Point a domain name to your server or add one to /etc/hosts:
+[http://jorgebernal.info/2009/07/17/42foo-virtual-hosts-web-development/](http://jorgebernal.info/2009/07/17/42foo-virtual-hosts-web-development/)
+
 ## Server setup (must be root)
 `apt-get install curl`  
 `curl https://raw.github.com/bradleyg/nserv/master/nserv_server_setup.sh | sh`
