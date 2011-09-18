@@ -4,16 +4,16 @@ locale-gen $LANG
 echo LANG=$LANG >> /etc/environment
 echo LC_ALL=$LC_ALL >> /etc/environment
 
-sudo apt-get update
+sudo apt-get -y update
 sudo apt-get -y upgrade
-sudo apt-get install build-essential
-sudo apt-get install git-core
+sudo apt-get -y install build-essential
+sudo apt-get -y install git-core
 
-sudo apt-get install python-software-properties
+sudo apt-get -y install python-software-properties
 sudo add-apt-repository ppa:chris-lea/node.js
-sudo apt-get update
-sudo apt-get install nodejs
-sudo apt-get install nodejs-dev
+sudo apt-get -y update
+sudo apt-get -y install nodejs
+sudo apt-get -y install nodejs-dev
 
 cd ~
 git clone git://github.com/isaacs/npm.git

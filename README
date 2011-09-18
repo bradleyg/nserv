@@ -1,0 +1,8 @@
+setup jey pairs first
+
+
+server setup
+curl https://raw.github.com/bradleyg/nserv/master/nserv_server_setup.sh | sh
+
+local setup
+curl https://raw.github.com/bradleyg/nserv/master/nserv_local_setup.sh | sh
