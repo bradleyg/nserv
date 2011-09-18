@@ -15,15 +15,8 @@ sudo apt-get -y update
 sudo apt-get -y install nodejs
 sudo apt-get -y install nodejs-dev
 
-cd ~
-git clone git://github.com/isaacs/npm.git
-cd npm
-sudo -s
-PATH=/usr/local/bin:$PATH
-make install
-exit
+curl http://npmjs.org/install.sh | sh
 
-rm -rf ~/npm
 npm install forever -g
 
 mkdir ~/server
