@@ -27,4 +27,4 @@ Create ssh config file so you can just "ssh myserver" and get access:
 
 `nserv myserver` where 'myserver' is the ssh hostname
   
-This will let you add/delete applications. If adding an application you will be provided with a git remote that you can add to your local repo.
+This will let you add/delete applications. If adding an application you will be provided with a git remote that you can add to your local repo. Once added execute `git push nserv master` and your server will updated.
