@@ -1,25 +1,28 @@
+#!/bin/bash
+
 export LANG=en_GB
 export LC_ALL=C
 locale-gen $LANG
 echo LANG=$LANG >> /etc/environment
 echo LC_ALL=$LC_ALL >> /etc/environment
 
-sudo apt-get -y update
-sudo apt-get -y upgrade
-sudo apt-get -y install build-essential
-sudo apt-get -y install git-core
-
-sudo apt-get -y install python-software-properties
-sudo add-apt-repository ppa:chris-lea/node.js
-sudo apt-get -y update
-sudo apt-get -y install nodejs
-sudo apt-get -y install nodejs-dev
+apt-get -y update
+apt-get -y upgrade
+apt-get -y install build-essential
+apt-get -y install git-core
+apt-get -y install python-software-properties
+add-apt-repository ppa:chris-lea/node.js
+apt-get -y update
+apt-get -y install nodejs
+apt-get -y install nodejs-dev
 
 curl http://npmjs.org/install.sh | sh
 
 npm install forever -g
 
 mkdir ~/server
+mkdir ~/www
+
 cd ~/server
 npm install http-proxy
 
