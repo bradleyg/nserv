@@ -1,4 +1,4 @@
-Nserv wants to be a [Heroku](http://www.heroku.com/) / [No.de](https://no.de/) / [AppFog](http://appfog.com/) style PaaS for deploying node.js applciations which can be hosted on your own servers. Nserv uses [forever](https://github.com/indexzero/forever) and [node-http-proxy](https://github.com/nodejitsu/node-http-proxy) so is running almost entirely on nodejs.
+Nserv wants to be a [Heroku](http://www.heroku.com/) / [No.de](https://no.de/) / [AppFog](http://appfog.com/) style PaaS for deploying node.js applciations which can be hosted on your own servers. Nserv uses [nodejitsu](http://nodejitsu.com/#technology) applications [forever](https://github.com/indexzero/forever) and [node-http-proxy](https://github.com/nodejitsu/node-http-proxy) so is running almost entirely on nodejs.
 
 ## Features:
 * Easy install in three lines
@@ -36,3 +36,8 @@ This will let you add/delete applications. If adding an application you will be 
 * Allow installation as a user other than root
 * Use a Procfile to choose the main application file
 * Restart servers on machine reboot
+
+## Good stuff:
+[nodejs](http://nodejs.org/)  
+[npm](http://npmjs.org/)  
+[nodejitsu](http://nodejitsu.com/#technology)  
