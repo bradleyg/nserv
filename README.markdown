@@ -34,5 +34,5 @@ This will let you add/delete applications. If adding an application you will be 
 
 ## TODO:
 * Allow installation as a user other than root
-* Use a Procfile for main application server file
+* Use a Procfile to choose the main application file
 * Restart servers on machine reboot
