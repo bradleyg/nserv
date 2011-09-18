@@ -1,7 +1,7 @@
 Nserv wants to be a [Heroku](http://www.heroku.com/) / [No.de](https://no.de/) / [AppFog](http://appfog.com/) style PaaS for deploying node.js applciations which can be hosted on your own servers. Nserv uses [nodejitsu](http://nodejitsu.com/#technology) applications [forever](https://github.com/indexzero/forever) and [node-http-proxy](https://github.com/nodejitsu/node-http-proxy) so is running almost entirely on nodejs. A total works in progress, probably with a lot of bugs.
 
 ## Features:
-* Easy install in three lines
+* Easy install in two lines
 * Git deployment of applications
 * Automatic install of npm modules
 * Simple management of deployed applications
@@ -20,7 +20,6 @@ Point a domain name to your server or add one to /etc/hosts:
 [http://jorgebernal.info/2009/07/17/42foo-virtual-hosts-web-development/](http://jorgebernal.info/2009/07/17/42foo-virtual-hosts-web-development/)
 
 ## Server setup (must be root):
-`apt-get install curl`  
 `curl https://raw.github.com/bradleyg/nserv/master/nserv_server_setup.sh | sh`
 
 ## Local setup (linux / osx):
