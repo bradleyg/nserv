@@ -25,4 +25,6 @@ Create ssh config file so you can just "ssh myserver" and get access:
 
 ## Usage (from local machine):
 
-`nserv myserver`
+`nserv myserver`  
+  
+Add the git remote shown to your local repo and push changes to update your application.
