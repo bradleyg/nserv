@@ -35,6 +35,8 @@ This will let you add/delete applications. If adding an application you will be 
 * Allow installation as a user other than root
 * Use a Procfile to choose the main application file
 * Restart servers on machine reboot
+* Write scripts in nodejs
+* Allow install via npm
 
 ## Good stuff:
 [nodejs](http://nodejs.org/)  
