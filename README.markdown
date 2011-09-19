@@ -39,6 +39,5 @@ This will let you add/delete applications. If adding an application you will be 
 * Allow install via npm
 
 ## Good stuff:
-[nodejs](http://nodejs.org/)  
 [npm](http://npmjs.org/)  
 [nodejitsu](http://nodejitsu.com/#technology)  
