@@ -116,7 +116,7 @@ elif [ "$choice" == "delete" ]; then
 	echo -e "${message}Removing domain $domain.......${reset}"
 	echo -e "${breaker}---------------------------------------------------${reset}"
 	rm -rf ~/www/$domain
-	sed -e "s/'$domain':'127.0.0.1:.*',//g" ~/server/www.js -i
+	sed -e "s/'$domain':'127.0.0.1:[0-9][0-9][0-9][0-9]*',//g" ~/server/www.js -i
 	forever stop ~/www/$domain/app/server.js &>/dev/null
 	forever stop ~/server/www.js &>/dev/null
 	echo -e "${message}Restarting server.......${reset}"
