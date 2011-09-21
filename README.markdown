@@ -28,6 +28,8 @@ Point a domain name to your server or add one to /etc/hosts:
   
 After adding an application you will be provided with a git remote that you can add to your local repo. Once added execute `git push nserv master` and your server will updated. For now your main server file must be called 'server.js'. If you provide a package.json file for npm modules add a .gitignore file to remove your node\_modules folder. Npm is installed on nserv and installs dependencies automatically. 
 
+![Screen Grab](https://github.com/bradleyg/nserv/raw/master/assets/nserv.png)
+
 ## TODO:
 * Use a Procfile to choose the main application file
 * Allow install via npm
