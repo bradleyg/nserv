@@ -19,7 +19,7 @@ Create ssh config file so you can just "ssh myserver" and get access:
 Point a domain name to your server or add one to /etc/hosts:
 [http://jorgebernal.info/2009/07/17/42foo-virtual-hosts-web-development/](http://jorgebernal.info/2009/07/17/42foo-virtual-hosts-web-development/)
 
-## Usage (from local machine):
+## Usage:
 
 `./nserv create (domain)`  
 `./nserv delete (domain)`  
