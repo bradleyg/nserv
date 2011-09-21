@@ -1,0 +1,251 @@
+#!/usr/bin/env node
+
+// modules
+var	commander = require('commander'),
+		fs = require('fs'),
+		sys = require("sys"),
+		exec  = require('child_process').exec,
+		forever  = require('forever'),
+		colors = require('colors');
+		
+// vars
+var choice = process.argv[2];
+		
+// vars
+var base = __dirname + '/',
+		placeholders = base + 'placeholders/',
+		configs = base + 'config/';
+		
+// choices
+if(choice === 'create'){
+	create();
+}
+else if(choice === 'remove'){
+	remove();
+}
+else if(choice == 'list'){
+	list();
+}
+else if(choice == 'help'){
+	help();
+}
+else {
+	sendError("Please provide a valid parameter. eg. 'create', 'remove', 'list', 'help'");
+}
+
+function create(){
+	if(typeof process.argv[3] === 'undefined') {
+		sendError("You must provide a domain name when running create.", null);
+	}
+	var domain = process.argv[3];
+	getApps(function(apps){
+		checkForExisting(domain, apps, function(exists){
+			if(exists){
+				sendError("Application already exists.");
+			}
+			else {
+				addApp(domain, function(){
+					sendOutput("Domain successfully added.\nAdd a git remote to make changes:\n".green + "> git remote add nserv ssh://".grey + "<HOSTNAME>".red + "/~/nserv/www/".grey + domain.grey + "/repo".grey);
+				});				
+			}
+		});
+	});	
+}
+
+function remove(domain) {
+	if(typeof process.argv[3] === 'undefined') {
+		sendError("You must provide a domain name when running delete.", null);
+	}
+	var domain = process.argv[3];
+	getApps(function(apps){
+		checkForExisting(domain, apps, function(exists){
+			if(exists){
+				deleteApp(domain, function(){
+					sendOutput("Application deleted");
+				});
+			}
+			else {
+				sendError("That application is not currently installed.", null);
+			}				
+		});
+	});	
+}
+
+function list(){
+	getApps(function(apps){
+		if(apps.length > 0){
+			var domainList = "";
+			for (var i = 0; i < apps.length; i++) {
+				domainList += apps[i].green + " - git remote add nserv ssh://".grey + "<HOSTNAME>".red + "/~/nserv/www/".grey + apps[i].grey + "/repo".grey + '\n';
+			};			
+		}
+		else {
+			domainList = "No applications installed.\n";
+		}
+		sendOutput("Installed applications/domains.\n".magenta + domainList.slice(0, -1).cyan);
+	});	
+}
+
+function help() {
+	var message = "" + 
+		"Options: \n".magenta +
+		"  create (domain) \n".cyan +
+		"  delete (domain) \n".cyan +
+		"  list \n".cyan +
+		"  help ".cyan;
+		
+	sendOutput(message);	
+}
+
+function addApp(domain, callback){
+	var appBase = base + 'www/' + domain + '/',
+			appCode = appBase + "app/",
+			appRepo = appBase + "repo/";
+	
+	getPort(function(port){
+		fs.mkdir(appBase, '755', function(err){
+			if(err){
+				sendError("Could not make base application directory.", err);
+			}
+			fs.mkdir(appCode, '755', function(err){
+				if(err){
+					sendError("Could not make application directory.", err);
+				}
+				fs.mkdir(appRepo, '755', function(err){
+					if(err){
+						sendError("Could not make git repo directory.", err);
+					}
+					exec("cd " + appRepo + " && exec git init --bare", function(err, stdout, stderr){
+						if(err){
+							sendError("Could create application git repo.", err);
+						}
+						fs.link(placeholders + 'post-receive', appRepo + 'hooks/post-receive' , function(err){
+							if(err){
+								sendError("Could not create post-receive hook.", err);
+							}
+							fs.chmod(appRepo + 'hooks/post-receive', '755', function(err){
+								if(err){
+									sendError("Could change file permissions for post-receive hook.", err);
+								}
+								fs.link(placeholders + 'helloworld.js', appCode + 'server.js' , function(err){
+									if(err){
+										sendError("Could not create placeholder application.", err);
+									}
+									fs.readFile(configs + 'domains.json', function (err, data) {
+										if(err){
+											sendError("Could not read proxy table.", err);
+										}
+										var config = JSON.parse(data);
+										config[domain] = {
+											port: port
+										}										
+										newConfig = JSON.stringify(config);
+										exec('PORT=' + port + ' forever start ' + appCode + 'server.js', function(err){
+											if(err){
+												sendError("Could not start application.", err);
+											}
+											fs.writeFile(configs + 'domains.json', newConfig, function (err) {
+												if(err){
+													sendError("Could not write proxy table.", err);
+												}
+												callback();
+											});									
+										});
+									});
+								});
+							});
+						});
+					});
+				});
+			});
+		});
+	});
+}
+
+function deleteApp (domain, callback) {
+	var appBase = base + 'www/' + domain + '/',
+			appCode = appBase + "app/",
+			appRepo = appBase + "repo/";
+	
+	console.log('----------------------------------------'.grey);
+	commander.confirm('Are you sure you want to delete this domain? (y/n):'.magenta + " ", function(ok){
+		process.stdin.destroy(); // needed to kill commander process
+		if(ok === true) {
+			exec("rm -r " + appBase, function (err) {
+				if(err){
+					sendError("Could not remove application directory.", err);
+				}
+				fs.readFile(configs + 'domains.json', function (err, data) {
+					if(err){
+						sendError("Could read proxy table.", err);
+					}
+					var config = JSON.parse(data);
+					delete config[domain];
+					var newConfig = JSON.stringify(config);
+					fs.writeFile(configs + 'domains.json', newConfig, function (err) {
+						if(err){
+							sendError("Could write proxy table.", err);
+						}
+						exec("forever stop " + appCode + "server.js", function(err){
+							if(err){
+								sendError("Could not write proxy table.", err);
+							}
+							callback();
+						});								
+					});
+				});
+			});
+		}
+		else {
+			sendOutput("Domain not deleted.");
+		}
+	});
+}
+
+function getApps(callback){
+	fs.readdir(base + 'www', function(err, apps){
+		if(err) { 
+			sendError("Failed to get current applications.", err) 
+		}
+		callback(apps);
+	});
+}
+
+function checkForExisting(domain, apps, callback) {
+	for (var i = 0; i < apps.length; i++) {
+		if(apps[i] == domain){
+			return callback(true);
+		}
+	}
+	callback(false);
+}
+
+function getPort(callback){
+ 	var port = Math.floor(Math.random() * 1001 + 9000);
+	exec("netstat -tulpn | grep 0.0.0.0:" + port, function(err, stdout, stderr){
+		if(stdout == ""){
+			return callback(port);
+		}
+		getPort(callback);
+	});
+}
+
+String.prototype.trim = function () {
+    return this.replace(/^\s*/, "").replace(/\s*$/, "");
+}
+
+function sendOutput(message){
+	console.log('----------------------------------------'.grey);
+	console.log(message.green);
+	console.log('----------------------------------------'.grey);
+}
+
+function sendError(message, err){
+	console.log('----------------------------------------'.red);
+	console.log(message.red);
+	if(err) {
+		console.log(err);
+	}
+	console.log('----------------------------------------'.red);
+	process.exit();
+}

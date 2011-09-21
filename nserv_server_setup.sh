@@ -19,27 +19,3 @@ apt-get -y install nodejs-dev
 curl http://npmjs.org/install.sh | sh
 
 npm install forever -g
-
-mkdir ~/server
-mkdir ~/www
-
-cd ~/server
-npm install http-proxy
-
-cat > ~/server/www.js << EOF
-var http = require('http'),
-    httpProxy = require('http-proxy');
-
-var options = {
-	hostnameOnly: true,
-	router: {                                                                                  
-	}
-}
-var proxyServer = httpProxy.createServer(options).listen(80);
-EOF
-
-forever start ~/server/www.js
-
-curl https://raw.github.com/bradleyg/nserv/master/nserv_deploy.sh > nserv_deploy.sh
-chmod +x nserv_deploy.sh
-mv nserv_deploy.sh /usr/local/bin/nserv_deploy

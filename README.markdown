@@ -1,4 +1,4 @@
-Nserv wants to be a [Nodejitsu](http://nodejitsu.com/) / [Heroku](http://www.heroku.com/) / [No.de](https://no.de/) / [AppFog](http://appfog.com/) style PaaS for deploying node.js applciations which can be hosted on your own servers. Nserv uses [nodejitsu](http://nodejitsu.com/#technology) applications [forever](https://github.com/indexzero/forever) and [node-http-proxy](https://github.com/nodejitsu/node-http-proxy) so is running almost entirely on nodejs. A total works in progress, crudely written in bash, probably with a lot of bugs. You shouldn't be running scripts direct from the internet through bash, especially as root...
+Nserv wants to be a [Nodejitsu](http://nodejitsu.com/) / [Heroku](http://www.heroku.com/) / [No.de](https://no.de/) / [AppFog](http://appfog.com/) style PaaS for deploying node.js applciations which can be hosted on your own servers. Nserv uses [nodejitsu](http://nodejitsu.com/#technology) applications [forever](https://github.com/indexzero/forever) and [node-http-proxy](https://github.com/nodejitsu/node-http-proxy) so is running almost entirely on nodejs. A total works in progress, probably with a lot of bugs.
 
 ## Features:
 * Easy install in two lines
@@ -19,23 +19,17 @@ Create ssh config file so you can just "ssh myserver" and get access:
 Point a domain name to your server or add one to /etc/hosts:
 [http://jorgebernal.info/2009/07/17/42foo-virtual-hosts-web-development/](http://jorgebernal.info/2009/07/17/42foo-virtual-hosts-web-development/)
 
-## Server setup (must be root):
-`curl https://raw.github.com/bradleyg/nserv/master/nserv_server_setup.sh | sh`
-
-## Local setup (linux / osx):
-`curl https://raw.github.com/bradleyg/nserv/master/nserv_local_setup.sh | sh`
-
 ## Usage (from local machine):
 
-`nserv myserver` where 'myserver' is the ssh hostname
+`./nserv create (domain)`
+`./nserv delete (domain)`
+`./nserv list`
+`./nserv help`
   
-This will let you add/delete applications. If adding an application you will be provided with a git remote that you can add to your local repo. Once added execute `git push nserv master` and your server will updated. For now your main server file must be called 'server.js'. If you provide a package.json file for npm modules add a .gitignore file to remove your node\_modules folder. Npm is installed on nserv and installs dependencies automatically. 
+After adding an application you will be provided with a git remote that you can add to your local repo. Once added execute `git push nserv master` and your server will updated. For now your main server file must be called 'server.js'. If you provide a package.json file for npm modules add a .gitignore file to remove your node\_modules folder. Npm is installed on nserv and installs dependencies automatically. 
 
 ## TODO:
-* Allow installation as a user other than root
 * Use a Procfile to choose the main application file
-* Restart servers on machine reboot
-* Write scripts in nodejs
 * Allow install via npm
 
 ## Good stuff:

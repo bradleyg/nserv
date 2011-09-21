@@ -1,0 +1,48 @@
+#!/usr/bin/env node
+
+// modules
+var exec  = require('child_process').exec,
+		path = require('path'),
+		fs = require('fs');
+
+// vars
+var appPath = path.resolve(__dirname + '/../../app'),
+		configfile = path.resolve(__dirname + '/../../../../config/domains.json'),
+		pathSegments = appPath.split('/'),
+		domain = pathSegments[pathSegments.length - 2];
+
+exec("export GIT_WORK_TREE=" + appPath + " && git checkout -f", function(err, stdout){
+	if(err){
+		sendError("Could not checkout git tree.", err);
+	}
+	fs.readFile(configfile, function (err, data) {
+		if(err){
+			sendError("Could not read config file.", err);
+		}
+		var config = JSON.parse(data);
+		var port = config[domain].port;
+		exec("PORT=" + port + " forever restart " + appPath + "/server.js", function(err, stdout){
+			if(err){
+				sendError("Could not restart server.", err);
+			}
+			console.log(stdout);
+			sendOutput("Application updated.");
+		});
+	});
+});
+
+function sendOutput(message){
+	console.log('----------------------------------------');
+	console.log(message);
+	console.log('----------------------------------------');
+}
+
+function sendError(message, err){
+	console.log('----------------------------------------');
+	console.log(message);
+	if(err) {
+		console.log(err);
+	}
+	console.log('----------------------------------------');
+	process.exit();
+}
