@@ -52,7 +52,7 @@ function create(){
   }); 
 }
 
-function remove(domain) {
+function remove() {
   if(typeof process.argv[3] === 'undefined') {
     sendError("You must provide a domain name when running delete.", null);
   }
