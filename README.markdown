@@ -7,11 +7,8 @@ Nserv wants to be a [Nodejitsu](http://nodejitsu.com/) / [Heroku](http://www.her
 * Simple management of deployed applications
 
 ## Setup:
-Create a fresh ubuntu 10.04 instance, linode or rackspace is good:
-[http://library.linode.com/getting-started##sph_deploy-a-linux-distribution](http://library.linode.com/getting-started##sph_deploy-a-linux-distribution)
-
-Point a domain name to your server or add one to /etc/hosts:
-[http://jorgebernal.info/2009/07/17/42foo-virtual-hosts-web-development/](http://jorgebernal.info/2009/07/17/42foo-virtual-hosts-web-development/)
+* Create a fresh ubuntu 10.04 instance, linode or rackspace is good: [http://library.linode.com/getting-started##sph_deploy-a-linux-distribution](http://library.linode.com/getting-started##sph_deploy-a-linux-distribution)  
+* Point a domain name to your server or add one to /etc/hosts: [http://jorgebernal.info/2009/07/17/42foo-virtual-hosts-web-development/](http://jorgebernal.info/2009/07/17/42foo-virtual-hosts-web-development/)  
 
 ## Usage:
 
