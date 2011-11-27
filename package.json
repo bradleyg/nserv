@@ -5,12 +5,12 @@
   "keywords": ["deploy", "git", "PaaS"],
   "author": "Bradley Griffiths <bradley.griffiths@gmail.com>",
   "dependencies": {
-    "commander": "0.3.2",
-    "forever": "0.7.2",
-    "http-proxy": "0.7.5",
-    "colors": "0.5.1"
+    "colors": "0.5.1", 
+    "commander": "0.4.2", 
+    "http-proxy": "0.7.6",
+    "forever": "0.7.4"
   },
   "engines": {
-    "node": "0.6.x"
+    "node": "0.4.12"
   }
 }

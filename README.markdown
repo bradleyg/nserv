@@ -12,7 +12,7 @@ Nserv wants to be a [Nodejitsu](http://nodejitsu.com/) / [Heroku](http://www.her
 ## Usage:
 
 `./nserv create (domain)`  
-`./nserv delete (domain)`  
+`./nserv remove (domain)`  
 `./nserv list`  
 `./nserv help`
   
