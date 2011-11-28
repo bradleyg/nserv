@@ -20,26 +20,14 @@ var base = path.resolve(__dirname + '/../') + '/',
     nservDir = process.env.HOME + '/.nserv';
 
 // choices
-if(choice === 'create'){
-  create();
-}
-else if(choice === 'remove'){
-  remove();
-}
-else if(choice == 'list'){
-  list();
-}
-else if(choice == 'help'){
-  help();
-}
-else if(choice == 'start'){
-  start();
-}
-else if(choice == 'stop'){
-  stop();
-}
-else {
-  sendError("Please provide a valid parameter. eg. 'create', 'remove', 'list', 'help', [sudo] 'start', [sudo] 'stop'");
+switch(choice){
+  case 'start': start(); break;
+  case 'stop': stop(); break;
+  case 'create': create(); break;
+  case 'remove': remove(); break;
+  case 'list': list(); break;
+  case 'help': help(); break;
+  default: sendError("Please provide a valid parameter. eg. 'create', 'remove', 'list', 'help', [sudo] 'start', [sudo] 'stop'"); break
 }
 
 function start(){
@@ -70,6 +58,15 @@ function start(){
         startServer();
       });
     }
+  });
+}
+
+function stop(){
+  testSudo(function(err){
+    if(err){
+      sendError("Are you sure you are running with sudo permissions?", err);
+    }
+    stopServer();
   });
 }
 
@@ -110,15 +107,6 @@ function testSudo(cb){
     cb(err)
     process.exit();
   }
-}
-
-function stop(){
-  testSudo(function(err){
-    if(err){
-      sendError("Are you sure you are running with sudo permissions?", err);
-    }
-    stopServer();
-  });
 }
 
 function create(){
@@ -190,7 +178,6 @@ function help() {
 
 function addApp(domain, callback){
   var appBase = domain + '/',
-      // appCode = appBase + "app/",
       appRepo = appBase + ".git/",
       fullPath = process.cwd() + '/' + domain;
   
@@ -199,69 +186,63 @@ function addApp(domain, callback){
       if(err){
         sendError("Could not make base application directory.", err);
       }
-      // fs.mkdir(appCode, '755', function(err){
-      //   if(err){
-      //     sendError("Could not make application directory.", err);
-      //   }
-        fs.mkdir(appRepo, '755', function(err){
+      fs.mkdir(appRepo, '755', function(err){
+        if(err){
+          sendError("Could not make git repo directory.", err);
+        }
+        exec("cd " + appRepo + " && exec git init --bare", function(err, stdout, stderr){
           if(err){
-            sendError("Could not make git repo directory.", err);
+            sendError("Could create application git repo.", err);
           }
-          exec("cd " + appRepo + " && exec git init --bare", function(err, stdout, stderr){
+          fs.readFile(placeholders + 'post-receive', function(err, data){
             if(err){
-              sendError("Could create application git repo.", err);
+              sendError("Could not read post-receive hook.", err);
             }
-            fs.readFile(placeholders + 'post-receive', function(err, data){
+            fs.writeFile(appRepo + 'hooks/post-receive', data, function(){
               if(err){
-                sendError("Could not read post-receive hook.", err);
+                sendError("Could not write post-receive hook.", err);
               }
-              fs.writeFile(appRepo + 'hooks/post-receive', data, function(){
+              fs.chmod(appRepo + 'hooks/post-receive', '755', function(err){
                 if(err){
-                  sendError("Could not write post-receive hook.", err);
+                  sendError("Could change file permissions for post-receive hook.", err);
                 }
-                fs.chmod(appRepo + 'hooks/post-receive', '755', function(err){
+                fs.link(placeholders + 'helloworld.js', appBase + 'server.js' , function(err){
                   if(err){
-                    sendError("Could change file permissions for post-receive hook.", err);
+                    sendError("Could not create placeholder application.", err);
                   }
-                  fs.link(placeholders + 'helloworld.js', appBase + 'server.js' , function(err){
+                  fs.readFile(nservDir + '/domains.json', function (err, data) {
                     if(err){
-                      sendError("Could not create placeholder application.", err);
+                      sendError("Could not read proxy table.", err);
                     }
-                    fs.readFile(nservDir + '/domains.json', function (err, data) {
+                    var config = JSON.parse(data);
+                    config[domain] = {
+                      port: port,
+                      loc: fullPath
+                    }                   
+                    newConfig = JSON.stringify(config);
+                    exec('PORT=' + port + ' forever start ' + fullPath + '/server.js', function(err){
                       if(err){
-                        sendError("Could not read proxy table.", err);
+                        sendError("Could not start application.", err);
                       }
-                      var config = JSON.parse(data);
-                      config[domain] = {
-                        port: port,
-                        loc: fullPath
-                      }                   
-                      newConfig = JSON.stringify(config);
-                      exec('PORT=' + port + ' forever start ' + fullPath + '/server.js', function(err){
+                      fs.writeFile(nservDir + '/domains.json', newConfig, function (err) {
                         if(err){
-                          sendError("Could not start application.", err);
+                          sendError("Could not write proxy table.", err);
                         }
-                        fs.writeFile(nservDir + '/domains.json', newConfig, function (err) {
-                          if(err){
-                            sendError("Could not write proxy table.", err);
-                          }
-                          callback();
-                        });                 
-                      });
+                        callback();
+                      });                 
                     });
                   });
-                });   
-              });
+                });
+              });   
             });
           });
-        // });
+        });
       });
     });
   });
 }
 
 function deleteApp (domain, loc, callback) {
-  
   console.log('----------------------------------------'.grey);
   commander.confirm('Are you sure you want to delete this domain? (y/n):'.magenta + " ", function(ok){
     process.stdin.destroy(); // needed to kill commander process
