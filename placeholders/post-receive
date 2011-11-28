@@ -3,13 +3,14 @@
 // modules
 var exec  = require('child_process').exec,
     path = require('path'),
-    fs = require('fs');
+    fs = require('fs'),
+    nservDir = process.env.HOME + '/.nserv';
 
 // vars
-var appPath = path.resolve(__dirname + '/../../app'),
-    configfile = path.resolve(__dirname + '/../../../../config/domains.json'),
+var appPath = path.resolve(__dirname + '/../../'),
+    configfile = nservDir + '/domains.json',
     pathSegments = appPath.split('/'),
-    domain = pathSegments[pathSegments.length - 2];
+    domain = pathSegments[pathSegments.length - 1];
 
 exec("export GIT_WORK_TREE=" + appPath + " && git checkout -f", function(err, stdout){
   if(err){
