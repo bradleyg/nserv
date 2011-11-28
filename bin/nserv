@@ -16,8 +16,7 @@ var choice = process.argv[2];
 // vars
 var base = path.resolve(__dirname + '/../') + '/',
     placeholders = base + 'placeholders/',
-    configs = base + 'config/',
-    nservDir = process.env.HOME + '/.nserv';
+    nservDir = process.env.HOME + '/.nserv/';
 
 // choices
 switch(choice){
@@ -31,15 +30,15 @@ switch(choice){
 }
 
 function start(){
-  fs.stat(nservDir + '/domains.json', function(err, data){
+  fs.stat(nservDir + 'domains.json', function(err, data){
     if(err){
       fs.mkdir(nservDir, '0777', function(err){
         if (err) throw err;
-        fs.readFile(base + 'config/domains.json', function (err, data) {
+        fs.readFile(placeholders + 'domains.json', function (err, data) {
           if (err) throw err;
-          fs.writeFile(nservDir + '/domains.json', data, function (err) {
+          fs.writeFile(nservDir + 'domains.json', data, function (err) {
             if (err) throw err;
-            fs.chmodSync(nservDir + '/domains.json', '0777');
+            fs.chmodSync(nservDir + 'domains.json', '0777');
             testSudo(function(err){
               if(err){
                 sendError("Are you sure you are running with sudo permissions?", err);
@@ -210,7 +209,7 @@ function addApp(domain, callback){
                   if(err){
                     sendError("Could not create placeholder application.", err);
                   }
-                  fs.readFile(nservDir + '/domains.json', function (err, data) {
+                  fs.readFile(nservDir + 'domains.json', function (err, data) {
                     if(err){
                       sendError("Could not read proxy table.", err);
                     }
@@ -224,7 +223,7 @@ function addApp(domain, callback){
                       if(err){
                         sendError("Could not start application.", err);
                       }
-                      fs.writeFile(nservDir + '/domains.json', newConfig, function (err) {
+                      fs.writeFile(nservDir + 'domains.json', newConfig, function (err) {
                         if(err){
                           sendError("Could not write proxy table.", err);
                         }
@@ -251,14 +250,14 @@ function deleteApp (domain, loc, callback) {
         if(err){
           sendError("Could not remove application directory.", err);
         }
-        fs.readFile(nservDir + '/domains.json', function (err, data) {
+        fs.readFile(nservDir + 'domains.json', function (err, data) {
           if(err){
             sendError("Could read proxy table.", err);
           }
           var config = JSON.parse(data);
           delete config[domain];
           var newConfig = JSON.stringify(config);
-          fs.writeFile(nservDir + '/domains.json', newConfig, function (err) {
+          fs.writeFile(nservDir + 'domains.json', newConfig, function (err) {
             if(err){
               sendError("Could write proxy table.", err);
             }
@@ -280,7 +279,7 @@ function deleteApp (domain, loc, callback) {
 
 function getApps(callback){
   var apps = new Array();
-  fs.readFile(nservDir + '/domains.json', function(err, data){
+  fs.readFile(nservDir + 'domains.json', function(err, data){
     var apps = JSON.parse(data);
     callback(apps);
   });
