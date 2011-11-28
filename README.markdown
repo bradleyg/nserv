@@ -11,12 +11,12 @@ Nserv wants to be a [Nodejitsu](http://nodejitsu.com/) / [Heroku](http://www.her
 * `sudo npm install nserv -g`  
 
 ## Usage:
-`[sudo] ./nserv start`  
-`[sudo] ./nserv stop`  
-`./nserv create (domain)`  
-`./nserv remove (domain)`  
-`./nserv list`  
-`./nserv help`
+`[sudo] nserv start` - starts running the nserv service  
+`[sudo] nserv stop`  
+`nserv create (domain)` - this will add the domain to nserv proxy table and start proxying requests  
+`nserv remove (domain)`  
+`nserv list`  
+`nserv help`
   
 After adding an application you will be provided with a git remote that you can add to your local repo. Once added execute `git push nserv master` and your server will updated and restarted. For now your main server file must be called 'server.js'. If you provide a package.json file for npm modules add a .gitignore file to remove your node\_modules folder. Npm is installed on nserv and installs dependencies automatically. 
 
