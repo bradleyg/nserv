@@ -11,9 +11,9 @@ Nserv wants to be a [Nodejitsu](http://nodejitsu.com/) / [Heroku](http://www.her
 * `sudo npm install nserv -g`  
 
 ## Usage:
-`[sudo] nserv start`  
+`[sudo] nserv start` - starts running the nserv service  
 `[sudo] nserv stop`  
-`nserv create (domain)`  
+`nserv create (domain)` - this will add the domain to nserv proxy table and start proxying requests  
 `nserv remove (domain)`  
 `nserv list`  
 `nserv help`
