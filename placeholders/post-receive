@@ -13,37 +13,27 @@ var appPath = path.resolve(__dirname + '/../../'),
     domain = pathSegments[pathSegments.length - 1];
 
 exec("export GIT_WORK_TREE=" + appPath + " && git checkout -f", function(err, stdout){
-  if(err){
-    sendError("Could not checkout git tree.", err);
-  }
+  error(err, "Could not checkout git tree.");
   fs.readFile(configfile, function (err, data) {
-    if(err){
-      sendError("Could not read config file.", err);
-    }
+    error(err, "Could not read config file.");
     var config = JSON.parse(data);
     var port = config[domain].port;
     exec("PORT=" + port + " forever restart " + appPath + "/server.js", function(err, stdout){
-      if(err){
-        sendError("Could not restart server.", err);
-      }
+      error(err, "Could not restart server.");
       console.log(stdout);
-      sendOutput("Application updated.");
+      success("Application updated.");
     });
   });
 });
 
-function sendOutput(message){
-  console.log('----------------------------------------');
-  console.log(message);
-  console.log('----------------------------------------');
+function success(message){
+  console.log("data:    " + message);
 }
 
-function sendError(message, err){
-  console.log('----------------------------------------');
-  console.log(message);
-  if(err) {
-    console.log(err);
+function error (err, message) {
+  if (err) {
+    console.log("data:    " + message);
+    console.log("data:    " + err);
+    process.exit();
   }
-  console.log('----------------------------------------');
-  process.exit();
 }
