@@ -5,7 +5,6 @@ var commander = require('commander'),
     fs = require('fs'),
     sys = require("sys"),
     exec  = require('child_process').exec,
-    forever  = require('forever'),
     http = require('http'),
     colors = require('colors'),
     path = require('path');
@@ -119,8 +118,8 @@ function create(){
         sendError("Application already exists.");
       }
       else {
-        addApp(domain, function(){
-          sendOutput("Domain successfully added.\nAdd a git remote to make changes:\n".green + "> git remote add nserv ssh://".grey + "<HOSTNAME>".red + "/~/nserv/www/".grey + domain.grey + "/.git".grey);
+        addApp(domain, function(fullPath){
+          sendOutput("Domain successfully added.".green + "\ndata:".grey + "    Add a git remote to make changes:".green + "\ndata:".grey + "    $ git remote add nserv ssh://".grey + "<HOSTNAME>".red + fullPath.grey + "/.git".grey);
         });       
       };
     });
@@ -151,11 +150,11 @@ function list(){
     if(Object.keys(apps).length > 0){
       var domainList = "";
       for (app in apps) {
-        domainList += app.green + " - git remote add nserv ssh://".grey + "<HOSTNAME>".red + apps[app].loc.grey + "/".grey + ".git".grey + '\n';  
+        domainList += "data:    ".grey + app.green + " - git remote add nserv ssh://".grey + "<HOSTNAME>".red + apps[app].loc.grey + "/".grey + ".git".grey + '\n';  
       };      
     }
     else {
-      domainList = "No applications installed.\n";
+      domainList = "data:    No applications installed.\n";
     }
     sendOutput("Installed applications/domains.\n".magenta + domainList.slice(0, -1).cyan);
   }); 
@@ -227,7 +226,7 @@ function addApp(domain, callback){
                         if(err){
                           sendError("Could not write proxy table.", err);
                         }
-                        callback();
+                        callback(fullPath);
                       });                 
                     });
                   });
@@ -242,8 +241,8 @@ function addApp(domain, callback){
 }
 
 function deleteApp (domain, loc, callback) {
-  console.log('----------------------------------------'.grey);
-  commander.confirm('Are you sure you want to delete this domain? (y/n):'.magenta + " ", function(ok){
+  console.log('data: '.grey);
+  commander.confirm('data:'.grey + '    Are you sure you want to delete this domain? (y/n):'.magenta + " ", function(ok){
     process.stdin.destroy(); // needed to kill commander process
     if(ok === true) {
       exec("rm -r " + loc, function (err) {
@@ -310,17 +309,17 @@ String.prototype.trim = function () {
 }
 
 function sendOutput(message){
-  console.log('----------------------------------------'.grey);
-  console.log(message.green);
-  console.log('----------------------------------------'.grey);
+  console.log('data:'.grey);
+  console.log("data:    ".grey + message.green);
+  console.log('data:'.grey);
 }
 
 function sendError(message, err){
-  console.log('----------------------------------------'.red);
-  console.log(message.red);
+  console.log('data:'.grey);
+  console.log("data:    ".grey + message.red);
   if(err) {
     console.log(err);
   }
-  console.log('----------------------------------------'.red);
+  console.log('data:'.grey);
   process.exit();
 }
