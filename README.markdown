@@ -15,7 +15,7 @@ Nserv wants to be a [Nodejitsu](http://nodejitsu.com/) / [Heroku](http://www.her
 `[sudo] nserv stop`  
 `nserv create (domain)` - this will add the domain to nserv proxy table and start proxying requests  
 `nserv remove (domain)`  
-`nserv list`  
+`nserv list` - lists all applications  
 `nserv help`
   
 You must first start the nserv server: `sudo nserv start`, this will create a http proxy table and route any domains added to it via: `nserv create domain.com`. Sudo privileges are required so the proxy server can listen on port 80.   
@@ -27,6 +27,7 @@ For now your main server file must be called 'server.js' and your app must liste
 ## TODO:
 * Define the main server.js in the package.json
 * Automatic install of npm modules
+* Hard start and stop of applications (without the need to delete or update)  
 
 ## Good stuff:
 [npm](http://npmjs.org/)  
