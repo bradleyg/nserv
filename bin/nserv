@@ -7,7 +7,8 @@ var commander = require('commander'),
     exec  = require('child_process').exec,
     http = require('http'),
     colors = require('colors'),
-    path = require('path');
+    path = require('path'),
+    spawn = require('child_process').spawn;
     
 // vars
 var choice = process.argv[2];
@@ -166,8 +167,7 @@ function addApp(domain, cb){
       error(err, "Could not make base application directory.");
       fs.mkdir(repo, '755', function(err){
         error(err, "Could not make git repo directory.");
-        exec("cd " + repo + " && exec git init --bare", function(err, stdout, stderr){
-          error(err, "Could create application git repo.");
+        createRepo(repo, function(){
           fs.readFile(placeholders + 'post-receive', function(err, data){
             error(err, "Could not read post-receive hook.");
             fs.writeFile(repo + 'hooks/post-receive', data, function(err){
@@ -254,6 +254,22 @@ function getPort(cb){
       return cb(port);
     }
     getPort(cb);
+  });
+}
+
+function createRepo(repo, cb){
+  var ps = spawn('git', [ 'init', '--bare', repo ]);
+  var err = '';
+  ps.stderr.on('data', function (data) { 
+    err += data;
+  });
+  ps.on('exit', function (code) {
+    if(code !== null){
+      cb();
+    }
+    else {
+      error(err, "Could create application git repo."); 
+    }
   });
 }
 
