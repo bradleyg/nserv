@@ -65,6 +65,201 @@ function stop(){
   });
 }
 
+function create(){
+  if(typeof process.argv[3] === 'undefined') {
+    error('undefined', 'You must provide a domain name when running create.');
+  }
+  var domain = process.argv[3];
+  readConfig(function(apps){
+    checkForExisting(domain, apps, function(loc){
+      error(loc, "Application already exists.");
+      addApp(domain, function(loc){
+        success("Domain successfully added.".green + "\ndata:".green + "    Add a git remote to make changes:".green + "\ndata:".grey + "    $ git remote add nserv ssh://".grey + "<HOSTNAME>".red + loc.grey + "/.git".grey);
+      });       
+    });
+  }); 
+}
+
+function remove() {
+  if(typeof process.argv[3] === 'undefined') {
+    error('undefined', "You must provide a domain name when running delete.");
+  }
+  var domain = process.argv[3];
+  readConfig(function(apps){
+    checkForExisting(domain, apps, function(loc){
+      if (loc === null){
+        error('Missing', "That application is not currently installed.");
+      }
+      deleteApp(domain, loc, function(){
+        success("Application deleted");
+      });
+    });
+  }); 
+}
+
+function list(){
+  readConfig(function(apps){
+    if(Object.keys(apps).length > 0){
+      var domainList = "";
+      for (app in apps) {
+        domainList += "data:    ".grey + app.green + " - git remote add nserv ssh://".grey + "<HOSTNAME>".red + apps[app].loc.grey + "/".grey + ".git".grey + '\n';  
+      }     
+    }
+    else {
+      domainList = "data:    No applications installed.".red + "\n";
+    }
+    message("Installed applications/domains.\n".cyan + domainList.slice(0, -1));
+  }); 
+}
+
+function help() {
+  var help = "" + 
+    "Options: \n".cyan +
+    "data:      [sudo] start \n".grey +
+    "data:      [sudo] stop \n".grey +
+    "data:      remove (domain) \n".grey +
+    "data:      create (domain) \n".grey +
+    "data:      remove (domain) \n".grey +
+    "data:      list \n".grey +
+    "data:      help ".grey;
+  message(help);  
+}
+
+function addApp(domain, cb){
+  var app = domain + '/',
+      repo = app + ".git/",
+      loc = process.cwd() + '/' + domain;
+  
+  getPort(function(port){
+    fs.mkdir(app, '755', function(err){
+      error(err, "Could not make base application directory.");     
+      createRepo(repo, function(){
+        var src = placeholders + 'post-receive',
+            dest = repo + 'hooks/post-receive';
+        copyFile(src, dest, '755', function(){
+          var src = placeholders + 'helloworld.js',
+              dest = app + 'server.js';
+          copyFile(src, dest, '755' , function(){
+            exec('PORT=' + port + ' forever start ' + loc + '/server.js', function(err){
+              error(err, "Could not start application.");
+              readConfig(function(config){                  
+                config[domain] = { port: port, loc: loc }; 
+                config = JSON.stringify(config);
+                writeConfig(config, function(){
+                  cb(loc);  
+                });
+              });
+            });
+          });
+        });
+      });
+    });
+  });
+}
+
+function deleteApp (domain, loc, callback) {
+  commander.confirm('data:    Are you sure you want to delete this domain? (y/n):'.magenta + " ", function(ok){
+    process.stdin.destroy(); // needed to kill commander process
+    if(ok === true) {
+      exec("rm -r " + loc, function (err) {
+        error(err, "Could not remove application directory.");
+        readConfig(function(config){
+          delete config[domain];
+          config = JSON.stringify(config);
+          writeConfig(config, function(){
+            exec("forever stop " + loc + "/server.js", function(err){
+              error(err, "Could not stop running the application.");
+              callback();
+            });
+          });             
+        });
+      });
+    }
+    else {
+      success("Domain not deleted.");
+    }
+  });
+}
+
+function checkForExisting(domain, apps, cb) {
+  for (app in apps) {
+    if(app == domain){
+    	var loc = apps[app].loc;
+    	return cb(loc);
+    }
+  }
+  cb(null);
+}
+
+function getPort(cb){
+  var port = Math.floor(Math.random() * 1001 + 9000);
+  exec("netstat -tulpn | grep 0.0.0.0:" + port, function(err, stdout, stderr){
+    if(stdout == ""){
+      return cb(port);
+    }
+    getPort(cb);
+  });
+}
+
+function createRepo(repo, cb){
+  fs.mkdir(repo, '755', function(err){
+    error(err, "Could not make git repo directory.");
+    var ps = spawn('git', [ 'init', '--bare', repo ]);
+    var err = '';
+    ps.stderr.on('data', function (data) { 
+      err += data;
+    });
+    ps.on('exit', function (code) {
+      if(code !== null){
+        cb();
+      }
+      else {
+        error(err, "Could create application git repo."); 
+      }
+    });
+  })
+}
+
+function copyFile(src, dest, perm, cb) {
+  fs.readFile(src, function(err, data){
+    error(err, "Could not read source file to copy.");
+    fs.writeFile(dest, data, function(err){
+      error(err, "Could not write destination file for copy.");
+      fs.chmod(dest, perm, function(err){
+        error(err, "Could change file permissions for for copied file.");
+        cb();
+      });
+    });
+  });
+}
+
+function writeConfig(config, cb){
+  fs.writeFile(nservDir + 'domains.json', config, function (err) {
+    error(err, "Could not write proxy table.");
+    cb();
+  });
+}
+
+function readConfig(cb) {
+  fs.readFile(nservDir + 'domains.json', function (err, data) {
+    error(err, "Could not read proxy table.");
+    var config = JSON.parse(data);
+    cb(config);
+  });
+}
+
+String.prototype.trim = function () {
+  return this.replace(/^\s*/, "").replace(/\s*$/, "");
+}
+
+function error (err, message) {
+  if (err) {
+    console.log("data:    ".red + message.red);
+    console.log("data:    ".red + err.red);
+    process.exit();
+  }
+}
+
 function startServer(){
   exec('forever start ' + base + 'lib/www.js', function(err, stdout, stderr){
     error(err, "Could not start main nserv server.");
@@ -92,195 +287,6 @@ function testSudo(cb){
   }
   catch(err) {
     cb(err)
-    process.exit();
-  }
-}
-
-function create(){
-  if(typeof process.argv[3] === 'undefined') {
-    error('undefined', 'You must provide a domain name when running create.');
-  }
-  var domain = process.argv[3];
-  getApps(function(apps){
-    checkForExisting(domain, apps, function(loc){
-      error(loc, "Application already exists.");
-      addApp(domain, function(loc){
-        success("Domain successfully added.".green + "\ndata:".green + "    Add a git remote to make changes:".green + "\ndata:".grey + "    $ git remote add nserv ssh://".grey + "<HOSTNAME>".red + loc.grey + "/.git".grey);
-      });       
-    });
-  }); 
-}
-
-function remove() {
-  if(typeof process.argv[3] === 'undefined') {
-    error('undefined', "You must provide a domain name when running delete.");
-  }
-  var domain = process.argv[3];
-  getApps(function(apps){
-    checkForExisting(domain, apps, function(loc){
-      if (loc === null){
-        error('Missing', "That application is not currently installed.");
-      }
-      deleteApp(domain, loc, function(){
-        success("Application deleted");
-      });
-    });
-  }); 
-}
-
-function list(){
-  getApps(function(apps){
-    if(Object.keys(apps).length > 0){
-      var domainList = "";
-      for (app in apps) {
-        domainList += "data:    ".grey + app.green + " - git remote add nserv ssh://".grey + "<HOSTNAME>".red + apps[app].loc.grey + "/".grey + ".git".grey + '\n';  
-      }     
-    }
-    else {
-      domainList = "data:    No applications installed.".red + "\n";
-    }
-    message("Installed applications/domains.\n".cyan + domainList.slice(0, -1));
-  }); 
-}
-
-function help() {
-  var help = "" + 
-    "Options: \n".cyan +
-    "data:      [sudo] start \n".grey +
-    "data:      [sudo] stop \n".grey +
-    "data:      remove (domain) \n".grey +
-    "data:      create (domain) \n".grey +
-    "data:      remove (domain) \n".grey +
-    "data:      list \n".grey +
-    "data:      help ".grey;
-    
-  message(help);  
-}
-
-function addApp(domain, cb){
-  var app = domain + '/',
-      repo = app + ".git/",
-      loc = process.cwd() + '/' + domain;
-  
-  getPort(function(port){
-    fs.mkdir(app, '755', function(err){
-      error(err, "Could not make base application directory.");
-      fs.mkdir(repo, '755', function(err){
-        error(err, "Could not make git repo directory.");
-        createRepo(repo, function(){
-          fs.readFile(placeholders + 'post-receive', function(err, data){
-            error(err, "Could not read post-receive hook.");
-            fs.writeFile(repo + 'hooks/post-receive', data, function(err){
-              error(err, "Could not write post-receive hook.");
-              fs.chmod(repo + 'hooks/post-receive', '755', function(err){
-                error(err, "Could change file permissions for post-receive hook.");
-                fs.link(placeholders + 'helloworld.js', app + 'server.js' , function(err){
-                  error(err, "Could not create placeholder application.");
-                  fs.readFile(nservDir + 'domains.json', function (err, data) {
-                    error(err, "Could not read proxy table.");
-                    var config = JSON.parse(data);
-                    config[domain] = {
-                      port: port,
-                      loc: loc
-                    }                   
-                    newConfig = JSON.stringify(config);
-                    exec('PORT=' + port + ' forever start ' + loc + '/server.js', function(err){
-                      error(err, "Could not start application.");
-                      fs.writeFile(nservDir + 'domains.json', newConfig, function (err) {
-                        error(err, "Could not write proxy table.");
-                        cb(loc);
-                      });                 
-                    });
-                  });
-                });
-              });   
-            });
-          });
-        });
-      });
-    });
-  });
-}
-
-function deleteApp (domain, loc, callback) {
-  commander.confirm('data:    Are you sure you want to delete this domain? (y/n):'.magenta + " ", function(ok){
-    process.stdin.destroy(); // needed to kill commander process
-    if(ok === true) {
-      exec("rm -r " + loc, function (err) {
-        error(err, "Could not remove application directory.");
-        fs.readFile(nservDir + 'domains.json', function (err, data) {
-          error(err, "Could read proxy table.");
-          var config = JSON.parse(data);
-          delete config[domain];
-          var newConfig = JSON.stringify(config);
-          fs.writeFile(nservDir + 'domains.json', newConfig, function (err) {
-            error(err, "Could write proxy table.");
-            exec("forever stop " + loc + "/server.js", function(err){
-              error(err, "Could not write proxy table.");
-              callback();
-            });               
-          });
-        });
-      });
-    }
-    else {
-      success("Domain not deleted.");
-    }
-  });
-}
-
-function getApps(cb){
-  fs.readFile(nservDir + 'domains.json', function(err, data){
-    error(err, 'Could not read domains.json.');
-    var apps = JSON.parse(data);
-    cb(apps);
-  });
-}
-
-function checkForExisting(domain, apps, cb) {
-  for (app in apps) {
-    if(app == domain){
-    	var loc = apps[app].loc;
-    	return cb(loc);
-    }
-  }
-  cb(null);
-}
-
-function getPort(cb){
-  var port = Math.floor(Math.random() * 1001 + 9000);
-  exec("netstat -tulpn | grep 0.0.0.0:" + port, function(err, stdout, stderr){
-    if(stdout == ""){
-      return cb(port);
-    }
-    getPort(cb);
-  });
-}
-
-function createRepo(repo, cb){
-  var ps = spawn('git', [ 'init', '--bare', repo ]);
-  var err = '';
-  ps.stderr.on('data', function (data) { 
-    err += data;
-  });
-  ps.on('exit', function (code) {
-    if(code !== null){
-      cb();
-    }
-    else {
-      error(err, "Could create application git repo."); 
-    }
-  });
-}
-
-String.prototype.trim = function () {
-  return this.replace(/^\s*/, "").replace(/\s*$/, "");
-}
-
-function error (err, message) {
-  if (err) {
-    console.log("data:    ".red + message.red);
-    console.log("data:    ".red + err.red);
     process.exit();
   }
 }
