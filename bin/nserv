@@ -130,7 +130,7 @@ function addApp(domain, cb){
         copyFile(src, dest, '755', function(){
           var src = placeholders + 'helloworld.js',
               dest = app + 'server.js';
-          copyFile(src, dest, '755' , function(){
+          copyFile(src, dest, '777' , function(){
             exec('PORT=' + port + ' forever start ' + loc + '/server.js', function(err){
               error(err, "Could not start application.");
               readConfig(function(config){                  
