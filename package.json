@@ -1,13 +1,13 @@
 {
   "name": "nserv",
-  "version": "0.0.4",
+  "version": "0.0.6",
   "description": "Nodejs hosting and deployment",
   "keywords": ["deploy", "git", "PaaS", "cli"],
   "author": "Bradley Griffiths <bradley.griffiths@gmail.com>",
   "dependencies": {
     "colors": "0.5.1", 
     "commander": "0.4.2", 
-    "http-proxy": "0.7.6"
+    "bouncy": "1.0.5"
   },
   "repository": {
     "type": "git",
@@ -17,6 +17,6 @@
     "nserv": "./bin/nserv"
   },
   "engines": {
-    "node": "0.4.12"
+    "node": ">= 0.4.12"
   }
 }
