@@ -17,6 +17,6 @@
     "nserv": "./bin/nserv"
   },
   "engines": {
-    "node": "0.4.12"
+    "node": ">= 0.4.12"
   }
 }
