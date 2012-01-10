@@ -1,5 +1,3 @@
-[![Build Status](https://secure.travis-ci.org/bradleyg/nserv.png)](http://travis-ci.org/bradleyg/nserv)  
-  
 Nserv wants to be a [Nodejitsu](http://nodejitsu.com/) / [Heroku](http://www.heroku.com/) / [No.de](https://no.de/) style PaaS for deploying node.js applciations which can be hosted on your own servers. Nserv uses [nodejitsu](http://nodejitsu.com/#technology) applications [forever](https://github.com/indexzero/forever) and [node-http-proxy](https://github.com/nodejitsu/node-http-proxy) so is running entirely on nodejs. A total works in progress, probably with a lot of bugs.  
   
 The application assumes you have your own server with sudo privileges.
