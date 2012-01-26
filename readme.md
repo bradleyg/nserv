@@ -1,7 +1,5 @@
 Nserv wants to be a [Nodejitsu](http://nodejitsu.com/) / [Heroku](http://www.heroku.com/) / [No.de](https://no.de/) style PaaS for deploying node.js applciations which can be hosted on your own servers. Nserv uses [nodejitsu](http://nodejitsu.com/#technology) applications [forever](https://github.com/indexzero/forever) and [node-http-proxy](https://github.com/nodejitsu/node-http-proxy) so is running entirely on nodejs. A total works in progress, probably with a lot of bugs.  
-  
-The application assumes you have your own server with sudo privileges.
-
+ 
 ## Features:
 * Git deployment of applications
 * Simple management of deployed applications
@@ -13,14 +11,14 @@ The application assumes you have your own server with sudo privileges.
 * `sudo npm install nserv -g`  
 
 ## Usage:
-`[sudo] nserv start` - starts running the nserv service  
-`[sudo] nserv stop`  
+`nserv start` - starts running the nserv service  
+`nserv stop`  
 `nserv create (domain)` - this will add the domain to nserv proxy table and start proxying requests  
 `nserv remove (domain)`  
 `nserv list` - lists all applications  
 `nserv help`
   
-You must first start the nserv server: `sudo nserv start`, this will create a http proxy table and route any domains added to it via: `nserv create domain.com`. Sudo privileges are required so the proxy server can listen on port 80.   
+You must first start the nserv server: `nserv start`, this will create a http proxy table and route any domains added to it via: `nserv create domain.com`.
 
 After creating an application you will be shown a git remote within the console that you can add to your local repo. Once added execute `git push nserv master` and your app will be updated and restarted automatically.  
 

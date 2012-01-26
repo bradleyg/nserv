@@ -24,7 +24,7 @@ switch(choice){
   case 'remove': remove(); break;
   case 'list': list(); break;
   case 'help': help(); break;
-  default: error('undefined', "Please provide a valid parameter. eg. 'create', 'remove', 'list', 'help', [sudo] 'start', [sudo] 'stop'"); break
+  default: error('undefined', "Please provide a valid parameter. eg. 'create', 'remove', 'list', 'help', 'start', 'stop'"); break
 }
 
 // start the main server
@@ -105,8 +105,8 @@ function list(){
 function help() {
   var help = "" + 
     "Options: \n".cyan +
-    "data:      [sudo] start \n".grey +
-    "data:      [sudo] stop \n".grey +
+    "data:      start \n".grey +
+    "data:      stop \n".grey +
     "data:      remove (domain) \n".grey +
     "data:      create (domain) \n".grey +
     "data:      remove (domain) \n".grey +
@@ -252,40 +252,28 @@ String.prototype.trim = function () {
 
 // start the main server
 function startServer(){
-  testSudo(function(){
-    exec('forever start ' + base + 'lib/www.js', function(err, stdout, stderr){
+  var ps = spawn('forever', [ 'start', base + 'lib/www.js' ]);
+  var err = '';
+  ps.stderr.on('data', function (data) { 
+    err += data;
+  });
+  ps.on('exit', function (code) {
+          console.log(code);
+    if(code !== null){
+      success('Nserv started on port 8080.');
+    }
+    else {
       error(err, "Could not start main nserv server.");
-      success('Nserv started on port 80.');
-    });
+    }
   });
 }
 
 // stop the main server
 function stopServer(){
-  testSudo(function(){
-    exec('forever stop ' + base + 'lib/www.js', function(err, stdout, stderr){
-      error(err, "Could not stop nserv server.");
-      success('Nserv server stopped.');
-    });  
-  });
-}
-
-// try to start a server on a port only admins can usually start
-function testSudo(cb){
-  var test = http.createServer(function (req, res) {
-    res.writeHead(200, {'Content-Type': 'text/plain'});
-    res.end('Hello World\n');
-  });
-  try {
-    test.listen('79', function(){
-      test.close();
-      cb(null);
-    });
-  }
-  catch(err) {
-    error(err, "Are you sure you have sudo permissions?.");
-    process.exit();
-  }
+  exec('forever stop ' + base + 'lib/www.js', function(err, stdout, stderr){
+    error(err, "Could not stop nserv server.");
+    success('Nserv server stopped.');
+  });  
 }
 
 // outputs

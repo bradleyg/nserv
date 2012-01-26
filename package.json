@@ -1,6 +1,6 @@
 {
   "name": "nserv",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Nodejs hosting and deployment",
   "keywords": ["deploy", "git", "PaaS", "cli"],
   "author": "Bradley Griffiths <bradley.griffiths@gmail.com>",
