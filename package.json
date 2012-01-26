@@ -5,9 +5,9 @@
   "keywords": ["deploy", "git", "PaaS", "cli"],
   "author": "Bradley Griffiths <bradley.griffiths@gmail.com>",
   "dependencies": {
-    "colors": "0.5.1", 
-    "commander": "0.4.2", 
-    "bouncy": "1.0.5"
+    "colors": "0.6.0-1", 
+    "commander": "0.5.2", 
+    "bouncy": "1.1.0"
   },
   "repository": {
     "type": "git",
@@ -17,6 +17,6 @@
     "nserv": "./bin/nserv"
   },
   "engines": {
-    "node": ">= 0.4.12"
+    "node": "0.6.*"
   }
 }
